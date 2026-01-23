@@ -78,10 +78,14 @@ const SuggestionContainer = () => {
                     })
                 }
             </div>
-            <div className='flex max-w-5xl mx-auto'>
-                <hr className='text-white-400 ' />
-                <p className='text-white-600'>OR DESCRIBE YOUR OWN IDEA</p>
-                <hr className='text-white-400' />
+            <div className="flex items-center w-full gap-3 mt-4 mb-4">
+                <div className="grow border-t border-white/40"></div>
+
+                <p className="text-white/60 text-sm whitespace-nowrap">
+                    OR DESCRIBE YOUR OWN IDEA
+                </p>
+
+                <div className="grow border-t border-white/40"></div>
             </div>
             <ProjectForm />
         </div>

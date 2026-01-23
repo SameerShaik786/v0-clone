@@ -11,7 +11,7 @@ const Navbar = async () => {
     imageUrl = user.image
   }
   return (
-    <div className='flex justify-center'>
+    <nav className='flex justify-center'>
       <div className='px-4 py-4 flex justify-between w-5xl'>
         <div className='p-2'>
           <img
@@ -41,7 +41,7 @@ const Navbar = async () => {
           </SignedOut>
         </div>
       </div>
-    </div>
+    </nav>
   )
 }
 
