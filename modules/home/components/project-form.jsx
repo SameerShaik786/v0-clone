@@ -67,7 +67,6 @@ const ProjectForm = () => {
                         </div>
                         <span className="text-[11px]">to submit</span>
                     </div>
-
                     {/* Submit button */}
                     <Button
                         type="submit"
