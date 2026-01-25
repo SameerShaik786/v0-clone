@@ -4,6 +4,10 @@ import { gemini, createAgent, createTool, createNetwork } from "@inngest/agent-k
 import Sandbox from "e2b";
 import { PROMPT } from "@/prompt";
 import { lastAssistantTextMessageContent } from "./utils";
+import { MessageType, MessageRole } from "@prisma/schema.prisma"
+import { createProject } from "@/modules/projects/actions";
+import { db } from "@/lib/db";
+import { isCustomErrorPage } from "next/dist/build/utils";
 
 export const codeAgent = inngest.createFunction(
   { id: "code-agent" },
@@ -153,10 +157,40 @@ export const codeAgent = inngest.createFunction(
 
     const result = await network.run(event.data.value);
 
-    const isError = !result?.state.data.summary
 
-    const sandbox = await Sandbox.connect(sandboxId )
+
+    const sandbox = await Sandbox.connect(sandboxId)
     const sandboxUrl = `https://${sandbox.getHost(3000)}`
+
+    await step.run("save-the-result", async () => {
+      const isError = !result?.state.data.summary || Object.keys(result.state.data.files || {}).length === 0
+
+      if (isError) {
+        return await db.message.create({
+          data: {
+            type: MessageType.ERROR,
+            role: MessageType.ASSISTANT,
+            content: "Something went wrong. Please try again",
+            projectId: event.data.projectId
+          }
+        })
+      }
+      return await db.message.create({
+        data: {
+          type: MessageType.RESULT,
+          projectId: event.data.projectId,
+          role: MessageType.ASSISTANT,
+          content: result.state.data.summary,
+          fragments:{
+            create:{
+              sandboxUrl,
+              title:"Untitled",
+              files:result.state.data.files
+            }
+          }
+        }
+      })
+    })
 
     return {
       sandboxUrl: sandboxUrl,
