@@ -4,10 +4,8 @@ import { gemini, createAgent, createTool, createNetwork } from "@inngest/agent-k
 import Sandbox from "e2b";
 import { PROMPT } from "@/prompt";
 import { lastAssistantTextMessageContent } from "./utils";
-import { MessageType, MessageRole } from "@prisma/schema.prisma"
-import { createProject } from "@/modules/projects/actions";
+import { MessageType, MessageRole } from "@prisma/client"
 import { db } from "@/lib/db";
-import { isCustomErrorPage } from "next/dist/build/utils";
 
 export const codeAgent = inngest.createFunction(
   { id: "code-agent" },
@@ -169,7 +167,7 @@ export const codeAgent = inngest.createFunction(
         return await db.message.create({
           data: {
             type: MessageType.ERROR,
-            role: MessageType.ASSISTANT,
+            role: MessageRole.ASSISTANT,
             content: "Something went wrong. Please try again",
             projectId: event.data.projectId
           }
@@ -179,7 +177,7 @@ export const codeAgent = inngest.createFunction(
         data: {
           type: MessageType.RESULT,
           projectId: event.data.projectId,
-          role: MessageType.ASSISTANT,
+          role: MessageRole.ASSISTANT,
           content: result.state.data.summary,
           fragments:{
             create:{

@@ -20,7 +20,7 @@ const formSchema = z.object({
 });
 
 
-const ProjectForm = () => {
+const MessageForm = () => {
     const [isFocused, setIsFocused] = useState(false)
     const router = useRouter()
     const {mutateAsync, isPending} = useCreateProject()
@@ -52,7 +52,7 @@ const ProjectForm = () => {
         <Form {...form}>
             <form
                 onSubmit={form.handleSubmit(onSubmit)}
-                className='relative border p-4 pt-1 rounded-xl bg-sidebar max-w-3xl mx-auto dark:bg-sidebar transition-all m-4'>
+                className='relative border p-4 pt-1 rounded-xl bg-sidebar max-w-md mx-auto dark:bg-sidebar transition-all mb-4'>
                 <FormField
                     control={form.control}
                     name="content"
@@ -65,7 +65,7 @@ const ProjectForm = () => {
                                 maxRows={10}
                                 onFocus={() => setIsFocused(true)}
                                 onBlur={() => setIsFocused(false)}
-                                placeholder='Describe your idea...'
+                                placeholder='Enter here for modifications'
                                 onKeyDown={(e) => {
                                     if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
                                         e.preventDefault();
@@ -96,4 +96,4 @@ const ProjectForm = () => {
     )
 }
 
-export default ProjectForm
+export default MessageForm

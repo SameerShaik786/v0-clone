@@ -25,7 +25,7 @@
   }
 
   model Project{
-    id String @unique @default(uuid())
+    id String @id @default(uuid())
     name String
     userId String
     user User @relation(fields: [userId],references: [id],onDelete: Cascade)
@@ -37,7 +37,7 @@
   }
 
   enum MessageRole{
-    USER 
+    USER
     ASSISTANT
   }
 
@@ -58,7 +58,7 @@
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    fragmets Fragment?
+    fragments Fragment?
   }
 
   model Fragment{

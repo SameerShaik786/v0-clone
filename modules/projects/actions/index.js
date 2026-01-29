@@ -3,10 +3,8 @@
 import { inngest } from "@/inngest/client";
 import { db } from "@/lib/db"
 import { getCurrentUser } from "@/modules/auth/actions"
-import {MessageRole,MessageType} from "@prisma/schema.prisma"
+import {MessageRole,MessageType} from "@prisma/client"
 import { generateSlug } from "random-word-slugs";
-
-
 
 
 export const createProject = async (value) => {
@@ -15,18 +13,21 @@ export const createProject = async (value) => {
     if(!user) throw new Error("Unauthorized")
 
     const newProject = await db.project.create({
-        data:{
-            userId: user.id,
-            name: generateSlug(2,{format:"kebab"}),
-            messages:{
-                create:{
-                    content:value,
-                    role: MessageRole.ADMIN,
-                    type:MessageType.RESULT
-                }
-            }
-        }
-    })
+    data: {
+      name: generateSlug(2, { format: "kebab" }),
+      userId: user.id,
+      messages: {
+        create:{
+          content: value,
+          role: MessageRole.USER,
+          type: MessageType.RESULT,
+        },
+      },
+    },
+    include:{
+        messages:true,
+    }
+  });
 
     await inngest.send({
         name:"code-agent/run",
@@ -36,6 +37,7 @@ export const createProject = async (value) => {
         }
     })
 
+    return newProject
 }
 
 export const getProjects = async() => {

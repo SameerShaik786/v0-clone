@@ -2,6 +2,7 @@ import { Image } from 'lucide-react'
 import React from 'react'
 import { emoji } from 'zod';
 import ProjectForm from './project-form';
+import ProjectList from './project-list';
 
 const PROJECT_TEMPLATES = [
     {
@@ -88,6 +89,7 @@ const SuggestionContainer = () => {
                 <div className="grow border-t border-white/40"></div>
             </div>
             <ProjectForm />
+            <ProjectList />
         </div>
     )
 }
