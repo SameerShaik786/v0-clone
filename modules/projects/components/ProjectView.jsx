@@ -18,6 +18,7 @@ import {
 import { Code2Icon, CrownIcon, EyeIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import CodeView from '@/modules/fragment/components/CodeView';
 
 const ProjectView = ({ projectId }) => {
     const { data, isPending } = useGetProjectById(projectId)
@@ -45,7 +46,7 @@ const ProjectView = ({ projectId }) => {
                 direction="horizontal"
                 className="h-full rounded-md border"
             >
-                <ResizablePanel defaultSize={45} minSize={40} className='p-1 text-sm'>
+                <ResizablePanel defaultSize={30} maxSize={35} minSize={35} className='p-1 text-sm'>
                     <ProjectHeader project={project} isPending={isPending} />
                     <MessageContainer messages={messages} isPending={isPending} getCurrentFragment = {getCurrentFragment}/>
                     <MessageForm />
@@ -53,7 +54,7 @@ const ProjectView = ({ projectId }) => {
 
                 <ResizableHandle withHandle />
 
-                <ResizablePanel defaultSize={75} className='p-1 text-sm'>
+                <ResizablePanel defaultSize={50} className='p-1 text-sm'>
                     <Tabs defaultValue="preview" className={"h-full flex flex-col"} value={tabState} onValueChange={(value) => setTabState(value)}>
                         <div className='flex w-full justify-between p-2 border-b gap-x-2'>
                             <TabsList className={"h-8 p-0 border rounded-md"}>
@@ -78,10 +79,26 @@ const ProjectView = ({ projectId }) => {
                             </div>
                         </div>
                         <TabsContent value="preview">
-                                <FragmentView fragment = {activeFragment} />
+                                {
+                                    activeFragment ? (
+                                        <FragmentView fragment={activeFragment} />
+                                    ) : (
+                                        <div className="p-2 flex h-full items-center justify-center">
+                                            <p className='text-sm text-muted-foreground'>Select a fragment to view the preview</p>
+                                        </div>
+                                    )
+                                }
                         </TabsContent>
                         <TabsContent value="code" className={""}>
-
+                                {
+                                    activeFragment ? (
+                                        <CodeView files={activeFragment.files}/>
+                                    ) : (
+                                        <div className="p-2 flex h-full items-center justify-center">
+                                            <p className='text-sm text-muted-foreground'>Select a fragment to view the Code</p>
+                                        </div>
+                                    )
+                                }
                         </TabsContent>
                     </Tabs>
                 </ResizablePanel>

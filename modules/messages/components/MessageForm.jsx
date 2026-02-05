@@ -52,7 +52,7 @@ const MessageForm = () => {
         <Form {...form}>
             <form
                 onSubmit={form.handleSubmit(onSubmit)}
-                className='relative border p-4 pt-1 rounded-xl bg-sidebar max-w-md mx-auto dark:bg-sidebar transition-all mb-4'>
+                className='relative border p-4 pt-1 rounded-xl bg-sidebar max-w-md mx-auto my-auto dark:bg-sidebar transition-all mb-1'>
                 <FormField
                     control={form.control}
                     name="content"

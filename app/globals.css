@@ -123,3 +123,13 @@
     @apply bg-background text-foreground;
   }
 }
+
+pre {
+  margin: 0;
+  padding-left:16px;
+  padding-top:16px;
+}
+
+code {
+  padding:2px;
+}

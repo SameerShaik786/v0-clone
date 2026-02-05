@@ -12,18 +12,6 @@ const MessageContainer = ({ messages, isPending,getCurrentFragment }) => {
                 )
             })   
             }
-            {   messages.map((message) => {
-                return (
-                    <MessageCard message={message} isPending={isPending} key={message.id}/>
-                )
-            })   
-            }
-            {   messages.map((message) => {
-                return (
-                    <MessageCard message={message} isPending={isPending} key={message.id}/>
-                )
-            })   
-            }
         </div>
     )
 }
