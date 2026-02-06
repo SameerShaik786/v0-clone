@@ -6,7 +6,6 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/componen
 import { Button } from '@/components/ui/button';
 import ProjectHeader from './ProjectHeader';
 import MessageContainer from '../../messages/components/MessageContainer';
-import ProjectForm from '@/modules/home/components/project-form';
 import MessageForm from '@/modules/messages/components/MessageForm';
 import FragmentView from '@/modules/fragment/components/FragmentView';
 import {
@@ -19,6 +18,7 @@ import { Code2Icon, CrownIcon, EyeIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import CodeView from '@/modules/fragment/components/CodeView';
+import { Spinner } from '@/components/ui/spinner';
 
 const ProjectView = ({ projectId }) => {
     const { data, isPending } = useGetProjectById(projectId)
@@ -32,7 +32,7 @@ const ProjectView = ({ projectId }) => {
     const messages = data?.messages
     console.log(messages)
 
-    if (!project) {
+    if (!project && !isPending) {
         return null;
     }
 
@@ -40,65 +40,82 @@ const ProjectView = ({ projectId }) => {
         setActiveFragment(value)
     }
 
+    // Show loading spinner while fetching project data
+    if (isPending) {
+        return (
+            <div className="h-screen w-full flex items-center justify-center">
+                <Spinner className="h-8 w-8" />
+            </div>
+        )
+    }
+
     return (
-        <div className='h-screen'>
+        <div className='h-screen w-full overflow-hidden'>
             <ResizablePanelGroup
                 direction="horizontal"
                 className="h-full rounded-md border"
             >
-                <ResizablePanel defaultSize={30} maxSize={35} minSize={35} className='p-1 text-sm'>
-                    <ProjectHeader project={project} isPending={isPending} />
-                    <MessageContainer messages={messages} isPending={isPending} getCurrentFragment = {getCurrentFragment}/>
-                    <MessageForm />
+                {/* Left Panel - Messages */}
+                <ResizablePanel defaultSize={30} maxSize={50} minSize={20} className='p-1 text-sm flex flex-col'>
+                    <div className='shrink-0 overflow-hidden'>
+                        <ProjectHeader project={project} isPending={isPending} />
+                    </div>
+                    
+                    <div className='flex-1 overflow-y-auto min-h-0'>
+                        <MessageContainer messages={messages} isPending={isPending} getCurrentFragment={getCurrentFragment} />
+                    </div>
+                    
+                    <div className='shrink-0'>
+                        <MessageForm projectId={projectId} />
+                    </div>
                 </ResizablePanel>
 
                 <ResizableHandle withHandle />
 
-                <ResizablePanel defaultSize={50} className='p-1 text-sm'>
+                {/* Right Panel - Preview/Code */}
+                <ResizablePanel defaultSize={70} minSize={30} className='p-1 text-sm flex flex-col'>
                     <Tabs defaultValue="preview" className={"h-full flex flex-col"} value={tabState} onValueChange={(value) => setTabState(value)}>
-                        <div className='flex w-full justify-between p-2 border-b gap-x-2'>
+                        <div className='flex w-full justify-between p-2 border-b gap-x-2 flex-wrap'>
                             <TabsList className={"h-8 p-0 border rounded-md"}>
-                                <TabsTrigger value="preview" className={"rounded-md p-2 flex items-center gap-x-2"}>
-
+                                <TabsTrigger value="preview" className={"rounded-md p-2 flex items-center gap-x-2 text-xs sm:text-sm"}>
                                     <EyeIcon className='size-4' />
-                                    Demo
-
+                                    <span className='hidden sm:inline'>Demo</span>
                                 </TabsTrigger>
-                                <TabsTrigger value="code" className={"rounded-md p-2 flex items-center gap-x-2"}>
+                                <TabsTrigger value="code" className={"rounded-md p-2 flex items-center gap-x-2 text-xs sm:text-sm"}>
                                     <Code2Icon className='size-4' />
-                                    Code
+                                    <span className='hidden sm:inline'>Code</span>
                                 </TabsTrigger>
                             </TabsList>
                             <div className='flex'>
-                                <Button asChild size='sm'>
+                                <Button asChild size='sm' className='text-xs sm:text-sm'>
                                     <Link href={"/pricing"}>
-                                        <CrownIcon className='size-4 mr-1' />
-                                        Upgrade
+                                        <CrownIcon className='size-3 sm:size-4 mr-1' />
+                                        <span className='hidden sm:inline'>Upgrade</span>
                                     </Link>
                                 </Button>
                             </div>
                         </div>
-                        <TabsContent value="preview">
-                                {
-                                    activeFragment ? (
-                                        <FragmentView fragment={activeFragment} />
-                                    ) : (
-                                        <div className="p-2 flex h-full items-center justify-center">
-                                            <p className='text-sm text-muted-foreground'>Select a fragment to view the preview</p>
-                                        </div>
-                                    )
-                                }
+                        <TabsContent value="preview" className='flex-1 overflow-hidden'>
+                            {
+                                activeFragment ? (
+                                    <FragmentView fragment={activeFragment} />
+                                ) : (
+                                    <div className="p-2 flex h-full items-center justify-center">
+                                        <p className='text-xs sm:text-sm text-muted-foreground text-center px-2'>Select a fragment to view the preview</p>
+                                    </div>
+                                )
+                            }
                         </TabsContent>
-                        <TabsContent value="code" className={""}>
-                                {
-                                    activeFragment ? (
-                                        <CodeView files={activeFragment.files}/>
-                                    ) : (
-                                        <div className="p-2 flex h-full items-center justify-center">
-                                            <p className='text-sm text-muted-foreground'>Select a fragment to view the Code</p>
-                                        </div>
-                                    )
-                                }
+                        <TabsContent value="code" className="flex-1 overflow-hidden">
+                            {
+                                activeFragment ? (
+                                    <CodeView files={activeFragment.files}/>
+                                ) : (
+                                    <div className="p-2 flex h-full items-center justify-center">
+                                        <p className='text-xs sm:text-sm text-muted-foreground text-center px-2'>Select a fragment to view the Code</p>
+                                    </div>
+                                )
+                            }
                         </TabsContent>
                     </Tabs>
                 </ResizablePanel>

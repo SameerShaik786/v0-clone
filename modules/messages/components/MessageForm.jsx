@@ -11,19 +11,18 @@ import z from 'zod'
 import { cn } from '@/lib/utils';
 import { ArrowUpIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useCreateProject } from '@/modules/projects/hooks/project';
-import { useRouter } from 'next/navigation';
 import { Spinner } from '@/components/ui/spinner';
+import { createUserMessage } from '../actions';
+import { useMessageSend } from '../hooks/useInngest';
 
 const formSchema = z.object({
-    content: z.string().min(1, "Project Description is required").max(1000, "Description too long")
+    content: z.string().min(1, "Message is required").max(2000, "Message too long")
 });
 
 
-const MessageForm = () => {
+const MessageForm = ({ projectId }) => {
     const [isFocused, setIsFocused] = useState(false)
-    const router = useRouter()
-    const {mutateAsync, isPending} = useCreateProject()
+    const { mutateAsync, isPending } = useMessageSend()
 
     const form = useForm({
         resolver: zodResolver(formSchema),
@@ -32,19 +31,19 @@ const MessageForm = () => {
         },
         mode: "onChange",
     });
-
+    
     const onSubmit = async (values) => {
-        try {
-            const res = await mutateAsync(values.content)
-            console.log(res)
-            router.push(`/project/${res}`)
-            toast.success('submitted successfully');
+        try{
+            const res = await mutateAsync(values.content);
+            console.log(res);
+            toast.success('Message sent successfully');
             form.reset();
         }
-        catch (error) {
-            toast.error("Error occured " + error)
+        catch(error){
+            toast.error('Failed to send message');
         }
     }
+    
 
     const isButtonDisabled = isPending || !form.watch("content").trim()
 
@@ -65,7 +64,8 @@ const MessageForm = () => {
                                 maxRows={10}
                                 onFocus={() => setIsFocused(true)}
                                 onBlur={() => setIsFocused(false)}
-                                placeholder='Enter here for modifications'
+                                placeholder='Ask for modifications...'
+                                disabled={isPending}
                                 onKeyDown={(e) => {
                                     if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
                                         e.preventDefault();

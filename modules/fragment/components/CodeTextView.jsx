@@ -1,5 +1,7 @@
+"use client";
 import CodeBlock from "@/components/code/CodeBlock"
 import { getLanguageFromFileName } from "@/lib/getLanguage"
+import React from 'react'
 import {
     Breadcrumb,
     BreadcrumbItem,

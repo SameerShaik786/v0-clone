@@ -1,22 +1,28 @@
 import z from "zod";
 import { inngest } from "./client";
-import { gemini, createAgent, createTool, createNetwork } from "@inngest/agent-kit";
+import { grok, createAgent, createTool, createNetwork, gemini } from "@inngest/agent-kit";
 import Sandbox from "e2b";
-import { PROMPT } from "@/prompt";
+import { PROMPT, RESPONSE_PROMPT } from "@/prompt";
 import { lastAssistantTextMessageContent } from "./utils";
 import { MessageType, MessageRole } from "@prisma/client"
 import { db } from "@/lib/db";
+
 
 export const codeAgent = inngest.createFunction(
   { id: "code-agent" },
   { event: "code-agent/run" },
   async ({ event, step }) => {
     const { sandboxId } = await step.run("create-sandbox", async () => {
-      const sandbox = await Sandbox.create()
+      const sandbox = await Sandbox.create("vo-clone-build2")
+
+      // Start Next.js dev server
       await sandbox.commands.run(
-        "cd /home/user && npx next dev --turbopack -H 0.0.0.0 -p 3000",
+        "cd /home/user && npx next dev -H 0.0.0.0 -p 3000",
         { background: true }
       )
+
+      // Wait for server to fully start
+      await new Promise(resolve => setTimeout(resolve, 12000))
       return { sandboxId: sandbox.sandboxId }
     })
 
@@ -45,10 +51,10 @@ export const codeAgent = inngest.createFunction(
                 const result = await sandbox.commands.run(commands, {
                   background: true,
                   onStdout: (data) => {
-                    buffer[stdout] += data;
+                    buffer["stdout"] += data;
                   },
                   onStderr: (data) => {
-                    buffer[stderror] += data
+                    buffer["stderror"] += data
                   }
                 })
                 return buffer.stdout
@@ -138,6 +144,8 @@ export const codeAgent = inngest.createFunction(
       }
     })
 
+
+
     //mulitple agents over the network
     const network = createNetwork({
       name: "coding agent network",
@@ -153,12 +161,51 @@ export const codeAgent = inngest.createFunction(
       }
     })
 
+    const responseAgent = createAgent({
+      name: "Response Agent",
+      description: "The Final agent to respond",
+      system: RESPONSE_PROMPT,
+      model: gemini({ model: "gemini-2.5-flash" }),
+    })
+
     const result = await network.run(event.data.value);
+    console.log("Final Network Result:", result);
+    console.log("Network State:", result.state);
 
+    const summary = result?.state?.data?.summary || "";
 
+    let displayContent = "";
 
-    const sandbox = await Sandbox.connect(sandboxId)
-    const sandboxUrl = `https://${sandbox.getHost(3000)}`
+    if (summary) {
+      try {
+        const { output: responseData } = await responseAgent.run(summary);
+
+        if (responseData && Array.isArray(responseData) && responseData.length > 0) {
+          if (responseData[0].type !== "text") {
+            displayContent = "Here you go,";
+          } else if (Array.isArray(responseData[0].content)) {
+            displayContent = responseData[0].content.map((c) => c).join("");
+          } else {
+            displayContent = responseData[0].content || "";
+          }
+        } else {
+          displayContent = summary;
+        }
+      } catch (error) {
+        console.error("ResponseAgent error:", error);
+        displayContent = summary;
+      }
+    } else {
+      displayContent = "Process completed";
+    }
+
+    let sandboxUrl = null;
+    try {
+      const sandbox = await Sandbox.connect(sandboxId);
+      sandboxUrl = `https://${sandbox.getHost(3000)}`;
+    } catch (error) {
+      console.log(`Could not connect to sandbox: ${error.message}`);
+    }
 
     await step.run("save-the-result", async () => {
       const isError = !result?.state.data.summary || Object.keys(result.state.data.files || {}).length === 0
@@ -173,18 +220,24 @@ export const codeAgent = inngest.createFunction(
           }
         })
       }
+
+      const fragmentData = {
+        title: "Untitled",
+        files: result.state.data.files
+      };
+
+      if (sandboxUrl) {
+        fragmentData.sandboxUrl = sandboxUrl;
+      }
+
       return await db.message.create({
         data: {
           type: MessageType.RESULT,
           projectId: event.data.projectId,
           role: MessageRole.ASSISTANT,
-          content: result.state.data.summary,
-          fragments:{
-            create:{
-              sandboxUrl,
-              title:"Untitled",
-              files:result.state.data.files
-            }
+          content: displayContent,
+          fragments: {
+            create: fragmentData
           }
         }
       })
@@ -194,7 +247,7 @@ export const codeAgent = inngest.createFunction(
       sandboxUrl: sandboxUrl,
       title: "Untitled",
       files: result.state.data.files,
-      summary: result.state.data.summary,
+      summary: displayContent,
     }
   },
 );
