@@ -1,9 +1,11 @@
+"use client";
+
 import { Image } from 'lucide-react'
-import React from 'react'
+import React, { useState } from 'react'
 import { emoji } from 'zod';
 import ProjectForm from './project-form';
 import ProjectList from './project-list';
-
+/*
 const PROJECT_TEMPLATES = [
     {
         emoji: "🎬",
@@ -54,8 +56,67 @@ const PROJECT_TEMPLATES = [
             "Build a Spotify-style music player with a sidebar for playlists, a main area for song details, and playback controls. Use local state for managing playback and song selection. Prioritize layout balance and intuitive control placement for a smooth user experience. Use dark mode.",
     }
 ];
+*/
+
+const PROJECT_TEMPLATES = [
+    {
+        emoji: "🧮",
+        title: "Build a calculator",
+        prompt:
+            "Build a simple calculator with number buttons, basic operators (+, -, *, /), and a display screen. Use local state to manage input and results. Keep the UI clean and centered.",
+    },
+    {
+        emoji: "✅",
+        title: "Build a todo list",
+        prompt:
+            "Build a todo list where users can add, delete, and mark tasks as completed using local state. Show completed tasks with strike-through styling. Keep layout simple and responsive.",
+    },
+    {
+        emoji: "📝",
+        title: "Build a notes app",
+        prompt:
+            "Build a notes app where users can create, edit, and delete notes using local state. Display notes in a simple card layout with clear spacing and readable typography.",
+    },
+    {
+        emoji: "⏱️",
+        title: "Build a timer / stopwatch",
+        prompt:
+            "Build a timer app with start, pause, and reset functionality using local state and intervals. Show time in minutes and seconds. Keep UI minimal and centered.",
+    },
+    {
+        emoji: "🔐",
+        title: "Build a login form UI",
+        prompt:
+            "Build a login form with email and password fields, inline validation messages, and submit handling using local state. Center the form and keep styling clean.",
+    },
+    {
+        emoji: "📊",
+        title: "Build a mini analytics dashboard",
+        prompt:
+            "Build a mini dashboard with stat cards showing mock analytics data. Add a button to refresh data using local state. Keep layout professional and structured.",
+    },
+    {
+        emoji: "📁",
+        title: "Build a file list viewer",
+        prompt:
+            "Build a file list viewer showing file name, size, and file type icon using mock data. Allow sorting by file name using local state. Keep UI simple and readable.",
+    },
+    {
+        emoji: "🛒",
+        title: "Build a mini cart system",
+        prompt:
+            "Build a simple product list with add-to-cart and remove-from-cart functionality using local state. Show cart item count and total price. Keep layout clean and structured.",
+    },
+];
+
 
 const SuggestionContainer = () => {
+    const [selectedPrompt, setSelectedPrompt] = useState("")
+
+    const handleTemplateClick = (prompt) => {
+        setSelectedPrompt(prompt)
+    }
+
     return (
         <div className='max-w-5xl mx-auto mt-4'>
             <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3'>
@@ -64,6 +125,7 @@ const SuggestionContainer = () => {
                         return (
                             <button
                                 key={index}
+                                onClick={() => handleTemplateClick(template.prompt)}
                                 className="group relative p-4 rounded-xl border bg-card hover:bg-accent/50 transition-all duration-200 text-left disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-md hover:border-primary/30"
                             >
                                 <div className="flex flex-col gap-2 items-center">
@@ -88,7 +150,7 @@ const SuggestionContainer = () => {
 
                 <div className="grow border-t border-white/40"></div>
             </div>
-            <ProjectForm />
+            <ProjectForm initialPrompt={selectedPrompt} />
             <ProjectList />
         </div>
     )

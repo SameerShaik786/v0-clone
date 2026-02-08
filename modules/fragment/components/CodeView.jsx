@@ -1,7 +1,7 @@
 "use client";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
 import { convertFilesToTreeItems } from '@/lib/utils'
-import React, { useMemo, useState } from 'react'
+import React, { useMemo, useState, useCallback } from 'react'
 import { TreeView } from './TreeView';
 import CodeTextView from './CodeTextView';
 
@@ -51,7 +51,7 @@ const CodeView = ({ files }) => {
             </ResizablePanel>
             <ResizableHandle withHandle className={"w-1.5 hover:bg-primary/20"} />
             <ResizablePanel minSize={55}>
-                <CodeTextView code={files[selectedFile]} selectedFile={selectedFile}/>
+                <CodeTextView code={files[selectedFile]} selectedFile={selectedFile} onCopy={handleCopy} copied={copied} />
             </ResizablePanel>
         </ResizablePanelGroup>
     )

@@ -15,7 +15,7 @@ export const useGetAllProjects = () => {
     })
 }
 
-export const useGetProjectById = (projectId) => {
+export const useGetProjectById = (projectId, isPolling = false) => {
     return useQuery({
         queryKey: ["projects", projectId],
         queryFn: async () => {
@@ -28,6 +28,7 @@ export const useGetProjectById = (projectId) => {
             return res.json();
         },
         enabled: Boolean(projectId),
+        refetchInterval: isPolling ? 3000 : false, // Poll every 3 seconds when processing
     });
 };
 

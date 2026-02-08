@@ -1,7 +1,7 @@
 "use client";
 
 import { FormField, Form } from '@/components/ui/form';
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form';
 import { Kbd, KbdGroup } from "@/components/ui/kbd"
 import TextareaAutosize from "react-textarea-autosize";
@@ -20,10 +20,10 @@ const formSchema = z.object({
 });
 
 
-const ProjectForm = () => {
+const ProjectForm = ({ initialPrompt = "" }) => {
     const [isFocused, setIsFocused] = useState(false)
     const router = useRouter()
-    const {mutateAsync, isPending} = useCreateProject()
+    const { mutateAsync, isPending } = useCreateProject()
 
     const form = useForm({
         resolver: zodResolver(formSchema),
@@ -33,11 +33,18 @@ const ProjectForm = () => {
         mode: "onChange",
     });
 
+    // Update textarea when a template is selected
+    useEffect(() => {
+        if (initialPrompt) {
+            form.setValue("content", initialPrompt)
+        }
+    }, [initialPrompt, form])
+
     const onSubmit = async (values) => {
         try {
             const res = await mutateAsync(values.content)
             console.log(res)
-            router.push(`/project/${res}`)
+            router.push(`/project/${res.id}`)
             toast.success('submitted successfully');
             form.reset();
         }
@@ -87,8 +94,8 @@ const ProjectForm = () => {
                     <Button
                         type="submit"
                         disabled={isButtonDisabled}
-                        className={cn("h-8 w-8 rounded-full p-0",isButtonDisabled && "bg-muted-foreground border" )}
-                    > { isPending ? (<Spinner className="h-4 w-4" />) : ( <ArrowUpIcon className="h-4 w-4" />)}
+                        className={cn("h-8 w-8 rounded-full p-0", isButtonDisabled && "bg-muted-foreground border")}
+                    > {isPending ? (<Spinner className="h-4 w-4" />) : (<ArrowUpIcon className="h-4 w-4" />)}
                     </Button>
                 </div>
             </form>

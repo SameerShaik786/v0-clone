@@ -20,9 +20,9 @@ const formSchema = z.object({
 });
 
 
-const MessageForm = ({ projectId }) => {
+const MessageForm = ({ projectId, onMessageSent }) => {
     const [isFocused, setIsFocused] = useState(false)
-    const { mutateAsync, isPending } = useMessageSend()
+    const { mutateAsync, isPending } = useMessageSend(projectId)
 
     const form = useForm({
         resolver: zodResolver(formSchema),
@@ -31,19 +31,23 @@ const MessageForm = ({ projectId }) => {
         },
         mode: "onChange",
     });
-    
+
     const onSubmit = async (values) => {
-        try{
-            const res = await mutateAsync(values.content);
+        try {
+            const res = await mutateAsync({ projectId, content: values.content });
             console.log(res);
             toast.success('Message sent successfully');
             form.reset();
+            // Notify parent that message was sent to trigger processing state
+            if (onMessageSent) {
+                onMessageSent();
+            }
         }
-        catch(error){
+        catch (error) {
             toast.error('Failed to send message');
         }
     }
-    
+
 
     const isButtonDisabled = isPending || !form.watch("content").trim()
 
@@ -87,8 +91,8 @@ const MessageForm = ({ projectId }) => {
                     <Button
                         type="submit"
                         disabled={isButtonDisabled}
-                        className={cn("h-8 w-8 rounded-full p-0",isButtonDisabled && "bg-muted-foreground border" )}
-                    > { isPending ? (<Spinner className="h-4 w-4" />) : ( <ArrowUpIcon className="h-4 w-4" />)}
+                        className={cn("h-8 w-8 rounded-full p-0", isButtonDisabled && "bg-muted-foreground border")}
+                    > {isPending ? (<Spinner className="h-4 w-4" />) : (<ArrowUpIcon className="h-4 w-4" />)}
                     </Button>
                 </div>
             </form>

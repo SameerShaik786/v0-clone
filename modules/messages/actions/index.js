@@ -1,5 +1,6 @@
 "use server";
 
+import { inngest } from "@/inngest/client";
 import { db } from "@/lib/db";
 import { MessageType, MessageRole } from "@prisma/client";
 
@@ -11,6 +12,14 @@ export async function createMessageModification(projectId, content) {
         role: MessageRole.USER,
         content: content,
         projectId: projectId,
+      },
+    });
+
+    await inngest.send({
+      name: "code-agent/run",
+      data: {
+        projectId: projectId,
+        value: content,
       },
     });
 
@@ -26,3 +35,4 @@ export async function createMessageModification(projectId, content) {
     };
   }
 }
+

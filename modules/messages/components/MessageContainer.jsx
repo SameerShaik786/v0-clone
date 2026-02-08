@@ -1,7 +1,8 @@
 import MessageCard from "./MessageCard"
 import { Spinner } from "@/components/ui/spinner"
+import { ThinkingMessage } from "./MessageCard"
 
-const MessageContainer = ({ messages, isPending, getCurrentFragment }) => {
+const MessageContainer = ({ messages, isPending, getCurrentFragment, isProcessing }) => {
     if (isPending && (!messages || messages.length === 0)) {
         return (
             <div className="h-[62vh] overflow-y-auto flex items-center justify-center">
@@ -16,14 +17,23 @@ const MessageContainer = ({ messages, isPending, getCurrentFragment }) => {
 
     return (
         <div className="h-[62vh] overflow-y-auto">
-            {messages.map((message) => {
+            {messages.map((message, index) => {
+                const isLastMessage = index === messages.length - 1;
                 return (
-                    <MessageCard message={message} isPending={isPending} key={message.id} getCurrentFragment={getCurrentFragment} />
+                    <MessageCard
+                        message={message}
+                        isPending={isPending}
+                        key={message.id}
+                        getCurrentFragment={getCurrentFragment}
+                        isLastMessage={isLastMessage}
+                        isProcessing={isProcessing}
+                    />
                 )
             })}
-            {isPending && messages.length > 0 && (
-                <div className="flex items-center justify-center p-4">
-                    <Spinner className="h-5 w-5" />
+            {/* Show ThinkingMessage when processing Inngest request */}
+            {isProcessing && (
+                <div className="p-3">
+                    <ThinkingMessage />
                 </div>
             )}
         </div>

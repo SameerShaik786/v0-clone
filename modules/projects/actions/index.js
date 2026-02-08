@@ -3,35 +3,35 @@
 import { inngest } from "@/inngest/client";
 import { db } from "@/lib/db"
 import { getCurrentUser } from "@/modules/auth/actions"
-import {MessageRole,MessageType} from "@prisma/client"
+import { MessageRole, MessageType } from "@prisma/client"
 import { generateSlug } from "random-word-slugs";
 
 
 export const createProject = async (value) => {
     const user = await getCurrentUser();
 
-    if(!user) throw new Error("Unauthorized")
+    if (!user) throw new Error("Unauthorized")
 
     const newProject = await db.project.create({
-    data: {
-      name: generateSlug(2, { format: "kebab" }),
-      userId: user.id,
-      messages: {
-        create:{
-          content: value,
-          role: MessageRole.USER,
-          type: MessageType.RESULT,
+        data: {
+            name: generateSlug(2, { format: "kebab" }),
+            userId: user.id,
+            messages: {
+                create: {
+                    content: value,
+                    role: MessageRole.USER,
+                    type: MessageType.RESULT,
+                },
+            },
         },
-      },
-    },
-    include:{
-        messages:true,
-    }
-  });
+        include: {
+            messages: true,
+        }
+    });
 
     await inngest.send({
-        name:"code-agent/run",
-        data:{
+        name: "code-agent/run",
+        data: {
             value: value,
             projectId: newProject.id
         }
@@ -40,29 +40,30 @@ export const createProject = async (value) => {
     return newProject
 }
 
-export const getProjects = async() => {
+export const getProjects = async () => {
     const user = await getCurrentUser()
 
-    if(!user) throw new Error("Unauthorized User")
-    
+    if (!user) throw new Error("Unauthorized User")
+
     const allProjects = await db.project.findMany({
-        where:{
+        where: {
             userId: user.id,
         },
-        orderBy:{
+        orderBy: {
             createdAt: "desc"
         }
     })
+
     return allProjects
 }
 
 export const getProjectById = async (id) => {
     const user = await getCurrentUser()
 
-    if(!user) throw new Error("Unauthorized User")
+    if (!user) throw new Error("Unauthorized User")
 
     const project = await db.project.findUnique({
-        where:{
+        where: {
             userId: user.id,
             id: id
         }

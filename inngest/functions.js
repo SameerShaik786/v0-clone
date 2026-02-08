@@ -21,8 +21,25 @@ export const codeAgent = inngest.createFunction(
         { background: true }
       )
 
-      // Wait for server to fully start
-      await new Promise(resolve => setTimeout(resolve, 12000))
+      // Wait for server to be ready with active polling
+      const maxAttempts = 30; // 30 attempts * 2 seconds = 60 seconds max
+      for (let i = 0; i < maxAttempts; i++) {
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        try {
+          const check = await sandbox.commands.run(
+            'curl -s -o /dev/null -w "%{http_code}" http://localhost:3000',
+            { timeout: 5000 }
+          );
+          const status = (check.stdout || '').trim();
+          if (status === '200' || status === '304') {
+            console.log(`Server ready after ${(i + 1) * 2} seconds`);
+            break;
+          }
+        } catch {
+          // Server not ready yet, continue polling
+        }
+      }
+
       return { sandboxId: sandbox.sandboxId }
     })
 

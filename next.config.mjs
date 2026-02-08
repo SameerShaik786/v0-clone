@@ -2,6 +2,14 @@
 const nextConfig = {
   /* config options here */
   reactCompiler: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'registry.npmmirror.com',
+      },
+    ],
+  },
 };
 
 export default nextConfig;

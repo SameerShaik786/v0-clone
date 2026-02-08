@@ -12,7 +12,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { ChevronRightIcon, FileIcon, FolderIcon } from "lucide-react";
-import { Collapsible, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
 
 
 export const TreeView = ({ data, value, onSelect }) => {
@@ -62,13 +62,12 @@ const Tree = ({ item, selectedValue, onSelect, parentPath }) => {
     );
   }
 
-  // It's a folder
+  // It's a folder - start collapsed (no defaultOpen)
 
   return (
     <SidebarMenuItem>
       <Collapsible
         className="group/collapsible [&[data-state=open]>button>svg:first-child]:rotate-90"
-        defaultOpen
       >
         <CollapsibleTrigger asChild>
           <SidebarMenuButton>
@@ -77,17 +76,19 @@ const Tree = ({ item, selectedValue, onSelect, parentPath }) => {
             <span className="truncate">{name}</span>
           </SidebarMenuButton>
         </CollapsibleTrigger>
-        <SidebarMenuSub>
-          {items.map((item, index) => (
-            <Tree
-              key={index}
-              item={item}
-              selectedValue={selectedValue}
-              onSelect={onSelect}
-              parentPath={currentPath}
-            />
-          ))}
-        </SidebarMenuSub>
+        <CollapsibleContent>
+          <SidebarMenuSub>
+            {items.map((item, index) => (
+              <Tree
+                key={index}
+                item={item}
+                selectedValue={selectedValue}
+                onSelect={onSelect}
+                parentPath={currentPath}
+              />
+            ))}
+          </SidebarMenuSub>
+        </CollapsibleContent>
       </Collapsible>
     </SidebarMenuItem>
   );

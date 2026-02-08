@@ -3,6 +3,7 @@ import { getCurrentUser } from '@/modules/auth/actions';
 import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from '@clerk/nextjs'
 import Image from 'next/image'
 import React from 'react'
+import ThemeToggle from '@/components/ui/theme-toggle'
 
 const Navbar = async () => {
   const user = await getCurrentUser();
@@ -14,15 +15,16 @@ const Navbar = async () => {
     <nav className='flex justify-center'>
       <div className='px-4 py-4 flex justify-between w-5xl'>
         <div className='p-2'>
-          <img
+          <Image
             src="https://registry.npmmirror.com/@lobehub/icons-static-png/1.75.0/files/dark/v0.png"
             height={40}
             alt="logo"
             width={40}
-            className='items-center'
+            className='items-center invert dark:invert-0'
           />
         </div>
-        <div className='p-2'>
+        <div className='p-2 flex items-center gap-2'>
+          <ThemeToggle />
           <SignedIn>
             <UserButton appearance={{
               elements: {

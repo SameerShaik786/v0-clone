@@ -1,12 +1,9 @@
 "use client";
 import React from 'react'
 
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
     Card,
-    CardAction,
-    CardDescription,
     CardFooter,
     CardHeader,
     CardTitle,
@@ -16,33 +13,41 @@ import { ArrowRight, FolderOpenIcon, Clock } from 'lucide-react';
 import { useGetAllProjects } from '@/modules/projects/hooks/project';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
-import ProjectPage from '@/app/project/[projectId]/page';
 
 
 const ProjectList = () => {
     const { data: projects, isPending, error } = useGetAllProjects()
-    console.log(projects)
-    console.log(error)
     const router = useRouter()
 
     const movingToProjectPage = (projectId) => {
         router.push(`/project/${projectId}`)
     }
 
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        return date.toLocaleString("en-US", {
+            month: "short",
+            day: "numeric",
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true
+        });
+    }
+
     if (isPending) {
         return (
             <div className="w-full mt-16">
                 <h2 className="text-2xl md:text-3xl font-bold text-center mb-8">Your Projects</h2>
-                <div className="p-3 lg:grid grid-cols-4 gap-4 max-w-full mx-auto mt-16">
-                    {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+                <div className="p-3 space-y-4 lg:space-y-0 lg:grid grid-cols-4 gap-4 max-w-full mx-auto mt-16">
+                    {[1, 2, 3, 4].map((i) => (
                         <Card key={i} className="w-full max-w-sm h-auto my-auto">
                             <CardHeader className="pb-3">
-                                <div className="flex items-start justify-between gap-2">
+                                <div className="flex items-center justify-between gap-3">
                                     <div className="flex-1">
-                                        <Skeleton className="h-6 w-3/4 mb-2" />
+                                        <Skeleton className="h-5 w-3/4 mb-2" />
                                         <Skeleton className="h-4 w-1/2" />
                                     </div>
-                                    <Skeleton className="h-6 w-6 rounded" />
+                                    <Skeleton className="h-10 w-10 rounded-lg shrink-0" />
                                 </div>
                             </CardHeader>
                             <CardFooter className="flex justify-end pt-3">
@@ -60,49 +65,39 @@ const ProjectList = () => {
     return (
         <div className='w-full mt-16'>
             <h2 className='text-2xl md:text-3xl font-bold text-center mb-8'>Your Projects</h2>
-            <div className='p-3 lg:grid grid-cols-4 gap-4 max-w-full mx-auto mt-16'>
+            <div className='p-3 space-y-4 lg:space-y-0 lg:grid grid-cols-4 gap-4 max-w-full mx-auto mt-16'>
                 {
                     projects.map((eachItem) => {
-                        const now = new Date();
-
-                        const options = {
-                            month: "short",
-                            day: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit"
-                        };
-                        
-                        const createdDate = new Date(eachItem.createdAt);
-                        if (createdDate.getFullYear() !== now.getFullYear()) {
-                            options.year = "numeric";
-                        }
-
-                        const formattedDate = createdDate.toLocaleString("en-US", options);
-
-
                         return (
                             <Link href={`/project/${eachItem.id}`} key={eachItem.id}>
-                                <Card className="w-full max-w-sm h-40 my-auto hover:shadow-lg transition-shadow flex flex-col justify-between">
-                                    <CardHeader className="">
-                                        <div className="flex items-start justify-between gap-2">
-                                            <div className="flex-1">
-                                                <CardTitle className="text-lg">{eachItem.name}</CardTitle>
+                                <Card className="w-full max-w-sm hover:shadow-lg transition-shadow">
+                                    <CardHeader>
+                                        <div className="flex items-center justify-between gap-3">
+                                            {/* Left side: Title and Time */}
+                                            <div className="flex-1 min-w-0">
+                                                <CardTitle className="text-base line-clamp-1 break-words">{eachItem.name}</CardTitle>
                                                 <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
                                                     <Clock className="h-3 w-3" />
-                                                    {formattedDate}
+                                                    <span>{formatDate(eachItem.createdAt)}</span>
                                                 </div>
                                             </div>
-                                            <FolderOpenIcon className="h-5 w-5 text-primary shrink-0 mt-1" />
+                                            {/* Right side: Folder Icon */}
+                                            <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center shrink-0">
+                                                <FolderOpenIcon className="h-5 w-5 text-muted-foreground" />
+                                            </div>
                                         </div>
                                     </CardHeader>
                                     <CardFooter className="flex justify-end">
                                         <Button
                                             variant="ghost"
-                                            className="flex items-center gap-2 text-sm text-white hover:bg-transparent"
-                                            onClick={() => movingToProjectPage(eachItem.id)}
-                                            type="submit"
+                                            size="sm"
+                                            className="flex items-center gap-2 text-sm"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                movingToProjectPage(eachItem.id);
+                                            }}
                                         >
-                                            View
+                                            Resume
                                             <ArrowRight className="h-4 w-4" />
                                         </Button>
                                     </CardFooter>
