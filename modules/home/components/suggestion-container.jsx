@@ -142,13 +142,13 @@ const SuggestionContainer = () => {
                 }
             </div>
             <div className="flex items-center w-full gap-3 mt-4 mb-4">
-                <div className="grow border-t border-white/40"></div>
+                <div className="grow border-t border-muted-foreground/40"></div>
 
-                <p className="text-white/60 text-sm whitespace-nowrap">
+                <p className="text-muted-foreground text-sm whitespace-nowrap">
                     OR DESCRIBE YOUR OWN IDEA
                 </p>
 
-                <div className="grow border-t border-white/40"></div>
+                <div className="grow border-t border-muted-foreground/40"></div>
             </div>
             <ProjectForm initialPrompt={selectedPrompt} />
             <ProjectList />
