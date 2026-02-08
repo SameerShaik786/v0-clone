@@ -38,25 +38,23 @@ const ProjectList = () => {
         return (
             <div className="w-full mt-16">
                 <h2 className="text-2xl md:text-3xl font-bold text-center mb-8">Your Projects</h2>
-                <div className="p-5 flex justify-center">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 max-w-full">
-                        {[1, 2, 3, 4].map((i) => (
-                            <Card key={i} className="w-full h-auto p-4">
-                                <CardHeader className="pb-3">
-                                    <div className="flex items-center justify-between gap-3">
-                                        <div className="flex-1">
-                                            <Skeleton className="h-5 w-3/4 mb-2" />
-                                            <Skeleton className="h-4 w-1/2" />
-                                        </div>
-                                        <Skeleton className="h-10 w-10 rounded-lg shrink-0" />
+                <div className="p-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 max-w-full mx-auto mt-16">
+                    {[1, 2, 3, 4].map((i) => (
+                        <Card key={i} className="w-full h-auto p-4">
+                            <CardHeader className="pb-3">
+                                <div className="flex items-center justify-between gap-3">
+                                    <div className="flex-1">
+                                        <Skeleton className="h-5 w-3/4 mb-2" />
+                                        <Skeleton className="h-4 w-1/2" />
                                     </div>
-                                </CardHeader>
-                                <CardFooter className="flex justify-end pt-3">
-                                    <Skeleton className="h-9 w-20" />
-                                </CardFooter>
-                            </Card>
-                        ))}
-                    </div>
+                                    <Skeleton className="h-10 w-10 rounded-lg shrink-0" />
+                                </div>
+                            </CardHeader>
+                            <CardFooter className="flex justify-end pt-3">
+                                <Skeleton className="h-9 w-20" />
+                            </CardFooter>
+                        </Card>
+                    ))}
                 </div>
             </div>
         );
@@ -67,49 +65,47 @@ const ProjectList = () => {
     return (
         <div className='w-full mt-16'>
             <h2 className='text-2xl md:text-3xl font-bold text-center mb-8'>Your Projects</h2>
-            <div className='p-3 flex justify-center'>
-                <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 max-w-full'>
-                    {
-                        projects.map((eachItem) => {
-                            return (
-                                <Link href={`/project/${eachItem.id}`} key={eachItem.id}>
-                                    <Card className="w-full max-w-sm hover:shadow-lg transition-shadow">
-                                        <CardHeader>
-                                            <div className="flex items-center justify-between gap-3">
-                                                {/* Left side: Title and Time */}
-                                                <div className="flex-1 min-w-0">
-                                                    <CardTitle className="text-base line-clamp-1 break-words">{eachItem.name}</CardTitle>
-                                                    <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
-                                                        <Clock className="h-3 w-3" />
-                                                        <span>{formatDate(eachItem.createdAt)}</span>
-                                                    </div>
-                                                </div>
-                                                {/* Right side: Folder Icon */}
-                                                <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center shrink-0">
-                                                    <FolderOpenIcon className="h-5 w-5 text-muted-foreground" />
+            <div className='p-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 max-w-full mx-auto mt-16'>
+                {
+                    projects.map((eachItem) => {
+                        return (
+                            <Link href={`/project/${eachItem.id}`} key={eachItem.id}>
+                                <Card className="w-full max-w-sm hover:shadow-lg transition-shadow">
+                                    <CardHeader>
+                                        <div className="flex items-center justify-between gap-3">
+                                            {/* Left side: Title and Time */}
+                                            <div className="flex-1 min-w-0">
+                                                <CardTitle className="text-base line-clamp-1 break-words">{eachItem.name}</CardTitle>
+                                                <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+                                                    <Clock className="h-3 w-3" />
+                                                    <span>{formatDate(eachItem.createdAt)}</span>
                                                 </div>
                                             </div>
-                                        </CardHeader>
-                                        <CardFooter className="flex justify-end">
-                                            <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                className="flex items-center gap-2 text-sm"
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    movingToProjectPage(eachItem.id);
-                                                }}
-                                            >
-                                                Resume
-                                                <ArrowRight className="h-4 w-4" />
-                                            </Button>
-                                        </CardFooter>
-                                    </Card>
-                                </Link>
-                            )
-                        })
-                    }
-                </div>
+                                            {/* Right side: Folder Icon */}
+                                            <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center shrink-0">
+                                                <FolderOpenIcon className="h-5 w-5 text-muted-foreground" />
+                                            </div>
+                                        </div>
+                                    </CardHeader>
+                                    <CardFooter className="flex justify-end">
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="flex items-center gap-2 text-sm"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                movingToProjectPage(eachItem.id);
+                                            }}
+                                        >
+                                            Resume
+                                            <ArrowRight className="h-4 w-4" />
+                                        </Button>
+                                    </CardFooter>
+                                </Card>
+                            </Link>
+                        )
+                    })
+                }
             </div>
         </div>
     )
