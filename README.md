@@ -100,11 +100,13 @@ vo/
 
 ## Database Schema
 
+Each **User** can have multiple **Projects**. Each **Project** contains multiple **Messages** (the conversation between user and AI). When the AI generates code, that **Message** gets a **Fragment** attached which holds the sandbox URL and generated files.
+
 ```mermaid
 erDiagram
-    User ||--o{ Project : owns
-    Project ||--o{ Message : contains
-    Message ||--o| Fragment : has
+    User ||--o{ Project : "has many"
+    Project ||--o{ Message : "has many"
+    Message ||--o| Fragment : "has one (optional)"
 
     User {
         string id PK
@@ -184,63 +186,6 @@ The AI has three tools at its disposal:
 
 ---
 
-## Getting Started
-
-### Prerequisites
-
-- Node.js 18+
-- PostgreSQL database (I use Neon)
-- Clerk account
-- E2B account
-- Google AI (Gemini) API key
-
-### Environment Variables
-
-Create a `.env` file:
-
-```env
-# Database
-DATABASE_URL="postgresql://..."
-
-# Clerk Auth
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="pk_..."
-CLERK_SECRET_KEY="sk_..."
-
-# E2B Sandbox
-E2B_API_KEY="e2b_..."
-
-# Google AI
-GOOGLE_GENERATIVE_AI_API_KEY="..."
-
-# Inngest (optional for dev)
-INNGEST_EVENT_KEY="..."
-```
-
-### Installation
-
-```bash
-# Clone the repo
-git clone https://github.com/SameerShaik786/v0-clone.git
-cd v0-clone
-
-# Install dependencies
-npm install
-
-# Setup database
-npx prisma generate
-npx prisma db push
-
-# Run development server
-npm run dev
-
-# In another terminal, run Inngest dev server
-npx inngest dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) to see the app.
-
----
-
 ## Features
 
 - **Natural Language to Code** - Describe what you want, get working code
@@ -280,12 +225,6 @@ Open [http://localhost:3000](http://localhost:3000) to see the app.
 - [ ] Collaborative editing
 - [ ] Deploy generated projects to Vercel
 - [ ] Version history for projects
-
----
-
-## Contributing
-
-Open to contributions! Feel free to open issues or submit PRs.
 
 ---
 
