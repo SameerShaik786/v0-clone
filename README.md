@@ -197,6 +197,12 @@ The AI has three tools at its disposal:
 
 ---
 
+## Works on Mobile
+
+Not just a desktop tool. The entire interface adapts to mobile screens, so you can describe ideas and generate code from your phone. The chat interface, code preview, and live demo all work seamlessly on smaller screens. Vibe code from anywhere.
+
+---
+
 ## How I Built This
 
 1. **Started with Next.js 16** - Using the new app router for clean routing
