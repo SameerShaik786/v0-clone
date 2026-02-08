@@ -185,86 +185,107 @@ export const codeAgent = inngest.createFunction(
       model: gemini({ model: "gemini-2.5-flash" }),
     })
 
-    const result = await network.run(event.data.value);
-    console.log("Final Network Result:", result);
-    console.log("Network State:", result.state);
+    try {
+      const result = await network.run(event.data.value);
+      console.log("Final Network Result:", result);
+      console.log("Network State:", result.state);
 
-    const summary = result?.state?.data?.summary || "";
+      const summary = result?.state?.data?.summary || "";
 
-    let displayContent = "";
+      let displayContent = "";
 
-    if (summary) {
-      try {
-        const { output: responseData } = await responseAgent.run(summary);
+      if (summary) {
+        try {
+          const { output: responseData } = await responseAgent.run(summary);
 
-        if (responseData && Array.isArray(responseData) && responseData.length > 0) {
-          if (responseData[0].type !== "text") {
-            displayContent = "Here you go,";
-          } else if (Array.isArray(responseData[0].content)) {
-            displayContent = responseData[0].content.map((c) => c).join("");
+          if (responseData && Array.isArray(responseData) && responseData.length > 0) {
+            if (responseData[0].type !== "text") {
+              displayContent = "Here you go,";
+            } else if (Array.isArray(responseData[0].content)) {
+              displayContent = responseData[0].content.map((c) => c).join("");
+            } else {
+              displayContent = responseData[0].content || "";
+            }
           } else {
-            displayContent = responseData[0].content || "";
+            displayContent = summary;
           }
-        } else {
+        } catch (error) {
+          console.error("ResponseAgent error:", error);
           displayContent = summary;
         }
-      } catch (error) {
-        console.error("ResponseAgent error:", error);
-        displayContent = summary;
+      } else {
+        displayContent = "Process completed";
       }
-    } else {
-      displayContent = "Process completed";
-    }
 
-    let sandboxUrl = null;
-    try {
-      const sandbox = await Sandbox.connect(sandboxId);
-      sandboxUrl = `https://${sandbox.getHost(3000)}`;
+      let sandboxUrl = null;
+      try {
+        const sandbox = await Sandbox.connect(sandboxId);
+        sandboxUrl = `https://${sandbox.getHost(3000)}`;
+      } catch (error) {
+        console.log(`Could not connect to sandbox: ${error.message}`);
+      }
+
+      await step.run("save-the-result", async () => {
+        const isError = !result?.state.data.summary || Object.keys(result.state.data.files || {}).length === 0
+
+        if (isError) {
+          return await db.message.create({
+            data: {
+              type: MessageType.ERROR,
+              role: MessageRole.ASSISTANT,
+              content: "Something went wrong. Please try again",
+              projectId: event.data.projectId
+            }
+          })
+        }
+
+        const fragmentData = {
+          title: "Untitled",
+          files: result.state.data.files
+        };
+
+        if (sandboxUrl) {
+          fragmentData.sandboxUrl = sandboxUrl;
+        }
+
+        return await db.message.create({
+          data: {
+            type: MessageType.RESULT,
+            projectId: event.data.projectId,
+            role: MessageRole.ASSISTANT,
+            content: displayContent,
+            fragments: {
+              create: fragmentData
+            }
+          }
+        })
+      })
+
+      return {
+        sandboxUrl: sandboxUrl,
+        title: "Untitled",
+        files: result.state.data.files,
+        summary: displayContent,
+      }
     } catch (error) {
-      console.log(`Could not connect to sandbox: ${error.message}`);
-    }
+      console.error("Network/API error:", error);
 
-    await step.run("save-the-result", async () => {
-      const isError = !result?.state.data.summary || Object.keys(result.state.data.files || {}).length === 0
-
-      if (isError) {
+      // Save error message to database so frontend can display it
+      await step.run("save-error-result", async () => {
         return await db.message.create({
           data: {
             type: MessageType.ERROR,
             role: MessageRole.ASSISTANT,
-            content: "Something went wrong. Please try again",
+            content: "Something went wrong. Please try again later.",
             projectId: event.data.projectId
           }
         })
-      }
-
-      const fragmentData = {
-        title: "Untitled",
-        files: result.state.data.files
-      };
-
-      if (sandboxUrl) {
-        fragmentData.sandboxUrl = sandboxUrl;
-      }
-
-      return await db.message.create({
-        data: {
-          type: MessageType.RESULT,
-          projectId: event.data.projectId,
-          role: MessageRole.ASSISTANT,
-          content: displayContent,
-          fragments: {
-            create: fragmentData
-          }
-        }
       })
-    })
 
-    return {
-      sandboxUrl: sandboxUrl,
-      title: "Untitled",
-      files: result.state.data.files,
-      summary: displayContent,
+      return {
+        error: true,
+        message: error.message || "API request failed"
+      }
     }
   },
 );

@@ -5,7 +5,7 @@ import { ThinkingMessage } from "./MessageCard"
 const MessageContainer = ({ messages, isPending, getCurrentFragment, isProcessing }) => {
     if (isPending && (!messages || messages.length === 0)) {
         return (
-            <div className="h-[62vh] overflow-y-auto flex items-center justify-center">
+            <div className="flex-1 min-h-0 overflow-y-auto flex items-center justify-center">
                 <Spinner className="h-6 w-6" />
             </div>
         )
@@ -16,7 +16,7 @@ const MessageContainer = ({ messages, isPending, getCurrentFragment, isProcessin
     }
 
     return (
-        <div className="h-[62vh] overflow-y-auto">
+        <div className="flex-1 min-h-0 overflow-y-auto">
             {messages.map((message, index) => {
                 const isLastMessage = index === messages.length - 1;
                 return (

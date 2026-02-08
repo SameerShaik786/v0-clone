@@ -1,7 +1,7 @@
 "use client";
 
 import { Image } from 'lucide-react'
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { emoji } from 'zod';
 import ProjectForm from './project-form';
 import ProjectList from './project-list';
@@ -60,6 +60,58 @@ const PROJECT_TEMPLATES = [
 
 const PROJECT_TEMPLATES = [
     {
+        emoji: "🧠",
+        title: "Smart Todo Manager",
+        prompt:
+            "Build a smart todo manager with priority tagging, due date badges, progress tracking bar, and category filters using local state. Include smooth add/edit animations, subtle color coding for priority levels, and a clean productivity-focused layout.",
+    },
+    {
+        emoji: "🧮",
+        title: "Scientific Calculator UI",
+        prompt:
+            "Create a modern scientific calculator with history panel, memory buttons, keyboard input support, and theme toggle using local state. Focus on tactile button feedback, clean numeric typography, and compact professional layout.",
+    },
+    {
+        emoji: "🗨️",
+        title: "Realtime Chat Workspace",
+        prompt:
+            "Build a chat workspace with conversation sidebar, message reactions, typing indicator, message grouping, and file attachment placeholder using local state. Focus on message readability, bubble spacing, and smooth scrolling behavior.",
+    },
+    {
+        emoji: "🎼",
+        title: "Immersive Music Player",
+        prompt:
+            "Design an immersive music player with animated album art, playlist drawer, playback queue panel, and progress waveform placeholder using local state. Use a dark aesthetic with strong visual focus on currently playing media.",
+    },
+    {
+        emoji: "🧾",
+        title: "Subscription Tracker",
+        prompt:
+            "Build a subscription tracking dashboard showing monthly cost summary, upcoming renewal alerts, service logos, and category grouping using local state. Emphasize financial clarity, color-coded spending indicators, and card-based layout.",
+    },
+    {
+        emoji: "🌗",
+        title: "Habit + Mood Tracker",
+        prompt:
+            "Create a habit and mood tracking interface with daily check grid, streak counters, mood emoji selector, and weekly progress chart placeholder using local state. Focus on calming colors, simple interaction flow, and motivational UI feedback.",
+    },
+    {
+        emoji: "🧭",
+        title: "Learning Roadmap Planner",
+        prompt:
+            "Build a learning roadmap planner with skill tree visualization placeholder, milestone cards, progress tracking, and resource links using local state. Focus on clear learning progression visuals and structured content sections.",
+    },
+    {
+        emoji: "📦",
+        title: "Personal Inventory Manager",
+        prompt:
+            "Create a personal inventory manager with item categories, quantity tracking, search filter, and low-stock alerts using local state. Focus on dense but readable data layout and fast scanning usability.",
+    }
+];
+
+
+const PROJECT_TEMPLATES2 = [
+    {
         emoji: "🧮",
         title: "Build a calculator",
         prompt:
@@ -112,9 +164,14 @@ const PROJECT_TEMPLATES = [
 
 const SuggestionContainer = () => {
     const [selectedPrompt, setSelectedPrompt] = useState("")
+    const formRef = useRef(null)
 
     const handleTemplateClick = (prompt) => {
         setSelectedPrompt(prompt)
+        // Scroll to the form after a short delay to allow the prompt to be set
+        setTimeout(() => {
+            formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        }, 100)
     }
 
     return (
@@ -150,7 +207,9 @@ const SuggestionContainer = () => {
 
                 <div className="grow border-t border-muted-foreground/40"></div>
             </div>
-            <ProjectForm initialPrompt={selectedPrompt} />
+            <div ref={formRef}>
+                <ProjectForm initialPrompt={selectedPrompt} />
+            </div>
             <ProjectList />
         </div>
     )

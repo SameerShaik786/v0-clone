@@ -56,8 +56,13 @@ const ProjectView = ({ projectId }) => {
             return
         }
 
-        // If a new message arrived and it's from the assistant, stop processing
+        // If a new message arrived and it's from the assistant (success or error), stop processing
         if (currentCount > prevMessageCountRef.current && lastMessage?.role === "ASSISTANT") {
+            setIsProcessing(false)
+        }
+
+        // Also stop processing if last message is an ERROR type
+        if (lastMessage?.type === "ERROR") {
             setIsProcessing(false)
         }
 
@@ -98,12 +103,12 @@ const ProjectView = ({ projectId }) => {
 
     // Mobile Messages Panel
     const MobileMessagesPanel = () => (
-        <div className='h-screen w-full flex flex-col'>
+        <div className='h-[100dvh] w-full flex flex-col'>
             <div className='shrink-0 overflow-hidden border-b'>
                 <ProjectHeader project={project} isPending={isPending} />
             </div>
 
-            <div className='flex-1 overflow-y-auto min-h-0'>
+            <div className='flex-1 overflow-y-auto min-h-0 pb-4'>
                 <MessageContainer
                     messages={messages}
                     isPending={isPending}
@@ -112,7 +117,7 @@ const ProjectView = ({ projectId }) => {
                 />
             </div>
 
-            <div className='shrink-0'>
+            <div className='shrink-0 pb-4 px-2'>
                 <MessageForm projectId={projectId} onMessageSent={onMessageSent} />
             </div>
         </div>
@@ -120,7 +125,7 @@ const ProjectView = ({ projectId }) => {
 
     // Mobile Fragment Panel with Back Button
     const MobileFragmentPanel = () => (
-        <div className='h-screen w-full flex flex-col'>
+        <div className='h-[100dvh] w-full flex flex-col'>
             {/* Mobile Header with Back Button */}
             <div className='flex items-center gap-2 p-2 border-b'>
                 <DropdownMenu>
@@ -190,7 +195,7 @@ const ProjectView = ({ projectId }) => {
     return (
         <>
             {/* Mobile View */}
-            <div className='md:hidden h-screen w-full overflow-hidden'>
+            <div className='md:hidden h-[100dvh] w-full overflow-hidden'>
                 {mobileView === "messages" ? (
                     <MobileMessagesPanel />
                 ) : (

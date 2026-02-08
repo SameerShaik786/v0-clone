@@ -38,9 +38,9 @@ const ProjectList = () => {
         return (
             <div className="w-full mt-16">
                 <h2 className="text-2xl md:text-3xl font-bold text-center mb-8">Your Projects</h2>
-                <div className="p-3 space-y-4 lg:space-y-0 lg:grid grid-cols-4 gap-4 max-w-full mx-auto mt-16">
+                <div className="p-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 max-w-full mx-auto mt-16">
                     {[1, 2, 3, 4].map((i) => (
-                        <Card key={i} className="w-full max-w-sm h-auto my-auto">
+                        <Card key={i} className="w-full h-auto p-4">
                             <CardHeader className="pb-3">
                                 <div className="flex items-center justify-between gap-3">
                                     <div className="flex-1">
@@ -65,7 +65,7 @@ const ProjectList = () => {
     return (
         <div className='w-full mt-16'>
             <h2 className='text-2xl md:text-3xl font-bold text-center mb-8'>Your Projects</h2>
-            <div className='p-3 space-y-4 lg:space-y-0 lg:grid grid-cols-4 gap-4 max-w-full mx-auto mt-16'>
+            <div className='p-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 max-w-full mx-auto mt-16'>
                 {
                     projects.map((eachItem) => {
                         return (

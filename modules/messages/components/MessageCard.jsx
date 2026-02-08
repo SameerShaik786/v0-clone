@@ -63,7 +63,12 @@ const MessageCard = ({ message, isPending, getCurrentFragment, isLastMessage, is
   return (
     <div className='p-3'>{
       isPending && role === "USER" ? (<Spinner size="4" />) : (
-        type === "ERROR" ? <Card className="text-red flex items-center justify-center">Something Went Wrong please wait</Card> : (
+        type === "ERROR" ? (
+          <Card className="text-destructive bg-destructive/10 border-destructive/20 flex flex-col items-center justify-center p-4 gap-2">
+            <p className="font-medium">⚠️ Something went wrong</p>
+            <p className="text-sm text-muted-foreground text-center">{content || "Please try again later."}</p>
+          </Card>
+        ) : (
           role === "USER" ? <div className='flex items-end'><Card className={"rounded-lg bg-muted ml-auto p-2 text-sm max-w-[80%] border-none shadow-none wrap-break-word"}>
             {shouldAnimateUserMessage ? (
               <WordByWordText text={message.content} interval={50} />

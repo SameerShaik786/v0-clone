@@ -86,7 +86,7 @@ const ProjectForm = ({ initialPrompt = "" }) => {
                     {/* Keyboard hint */}
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                         <div className="flex items-center gap-1 rounded-md bg-muted/40 px-2 py-1">
-                            <Kbd className="h-5 px-1.5 text-[10px]">⌘</Kbd>Enter
+                            Ctrl + Enter
                         </div>
                         <span className="text-[11px]">to submit</span>
                     </div>
