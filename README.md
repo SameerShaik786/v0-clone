@@ -21,7 +21,7 @@ You type something like "Build me a landing page for a coffee shop with a hero s
 | Database | PostgreSQL (Neon) + Prisma ORM |
 | AI Agent | Inngest + Gemini 2.5 Flash |
 | Code Sandbox | E2B (cloud execution) |
-| Code Highlighting | Shiki + Monaco Editor |
+| Code Highlighting | Shiki|
 | UI Components | Radix UI + shadcn/ui |
 
 ---
@@ -157,7 +157,7 @@ flowchart TD
     
     E --> F{Agent Loop}
     F --> G[Read prompt/context]
-    G --> H[Call Gemini AI]
+    G --> H[Call LLM]
     H --> I{Tool calls?}
     
     I -->|createFile| J[Write files to sandbox]
